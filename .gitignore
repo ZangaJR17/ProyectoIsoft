@@ -1,0 +1,23 @@
+
+*.pyc
+__pycache__/
+.Python
+.env
+venv/
+env/
+venv_project/
+/htmlcov/
+.pytest_cache/
+.coverage
+
+# Archivos de Django
+/media/
+/static_collected/
+local_settings.py
+
+# Archivos del IDE (ej. VS Code)
+.vscode/
+
+# Archivos del sistema operativo
+.DS_Store
+Thumbs.db

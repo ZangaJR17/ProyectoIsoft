@@ -1,0 +1,912 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Panel de Cliente - Espacios Eventos</title>
+    <!-- ASEGÚRATE DE QUE ESTA URL ES EXACTAMENTE ASÍ, SIN CORCHETES NI PARÉNTESIS -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        /* Estilos generales */
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f7f6;
+            color: #333;
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* Sidebar de navegación */
+        .sidebar {
+            width: 250px;
+            background-color: #2c3e50; /* Azul oscuro */
+            color: white;
+            padding-top: 20px;
+            box-shadow: 2px 0 5px rgba(0,0,0,0.2);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            overflow-y: auto;
+        }
+
+        .sidebar h2 {
+            margin-bottom: 30px;
+            color: #ecf0f1; /* Gris claro */
+            font-size: 1.8em;
+        }
+
+        .sidebar ul {
+            list-style: none;
+            padding: 0;
+            width: 100%;
+        }
+
+        .sidebar ul li {
+            width: 100%;
+        }
+
+        .sidebar ul li a {
+            display: flex;
+            align-items: center;
+            padding: 15px 20px;
+            color: white;
+            text-decoration: none;
+            transition: background-color 0.3s, color 0.3s;
+            font-size: 1.1em;
+            width: 100%;
+            box-sizing: border-box;
+        }
+
+        .sidebar ul li a i {
+            margin-right: 15px;
+            font-size: 1.3em;
+        }
+
+        .sidebar ul li a:hover,
+        .sidebar ul li a.active {
+            background-color: #34495e; /* Un poco más claro */
+            color: #2ecc71; /* Verde esmeralda */
+        }
+        
+        .sidebar .logout {
+            margin-top: auto; /* Empuja el botón de logout al final */
+            width: 100%;
+            padding: 20px;
+            box-sizing: border-box;
+            text-align: center;
+        }
+
+        .sidebar .logout button {
+            background-color: #e74c3c; /* Rojo para logout */
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1em;
+            transition: background-color 0.3s;
+        }
+
+        .sidebar .logout button:hover {
+            background-color: #c0392b;
+        }
+
+        /* Contenido principal */
+        .main-content {
+            flex-grow: 1;
+            padding: 30px;
+            overflow-y: auto; /* Para permitir scroll si el contenido es largo */
+        }
+
+        .main-content h1 {
+            color: #2c3e50;
+            margin-bottom: 20px;
+            font-size: 2.2em;
+        }
+
+        .card-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 25px;
+            margin-top: 30px;
+        }
+
+        .card {
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+            overflow: hidden;
+            transition: transform 0.3s ease-in-out;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+        }
+
+        .card-image {
+            width: 100%;
+            height: 180px;
+            background-color: #ccc; /* Placeholder */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 1.5em;
+            color: #666;
+            background-size: cover;
+            background-position: center;
+        }
+
+        .card-content {
+            padding: 20px;
+        }
+
+        .card-content h3 {
+            margin-top: 0;
+            margin-bottom: 10px;
+            color: #34495e;
+            font-size: 1.4em;
+        }
+
+        .card-content p {
+            font-size: 0.95em;
+            line-height: 1.6;
+            color: #555;
+            margin-bottom: 10px;
+        }
+
+        .card-content .price {
+            font-weight: bold;
+            color: #2ecc71;
+            font-size: 1.1em;
+            margin-top: 15px;
+        }
+
+        /* Estilos de formulario y tabla (genéricos por ahora) */
+        .form-section {
+            background-color: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+            margin-bottom: 30px;
+        }
+
+        .form-section label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+        }
+
+        .form-section input[type="text"],
+        .form-section input[type="email"],
+        .form-section input[type="date"],
+        .form-section input[type="time"],
+        .form-section textarea,
+        .form-section select {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 15px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            box-sizing: border-box;
+        }
+
+        .form-section button {
+            background-color: #2ecc71;
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1.1em;
+            transition: background-color 0.3s;
+        }
+
+        .form-section button:hover {
+            background-color: #27ae60;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+            background-color: white;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+        }
+
+        table th, table td {
+            padding: 12px 15px;
+            border-bottom: 1px solid #ddd;
+            text-align: left;
+        }
+
+        table th {
+            background-color: #f2f2f2;
+            font-weight: bold;
+            color: #333;
+        }
+
+        table tbody tr:hover {
+            background-color: #f9f9f9;
+        }
+
+        .action-button {
+            background-color: #3498db;
+            color: white;
+            border: none;
+            padding: 8px 12px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.9em;
+            transition: background-color 0.3s;
+        }
+        .action-button:hover {
+            background-color: #2980b9;
+        }
+        .message-box {
+            padding: 15px;
+            margin-bottom: 20px;
+            border-radius: 5px;
+            font-weight: bold;
+        }
+        .message-box.success {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        .message-box.error {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+    </style>
+</head>
+<body>
+    <div class="sidebar">
+        <h2>Panel de Cliente</h2>
+        <ul>
+            <li><a href="#" data-section="dashboard" class="active"><i class="fas fa-home"></i> Inicio</a></li>
+            <li><a href="#" data-section="explore"><i class="fas fa-search"></i> Explorar Instalaciones</a></li>
+            <li><a href="#" data-section="reservations"><i class="fas fa-calendar-alt"></i> Mis Reservas</a></li>
+            <li><a href="#" data-section="make-reservation"><i class="fas fa-calendar-plus"></i> Realizar Reserva</a></li>
+            <li><a href="#" data-section="pay-reservations"><i class="fas fa-money-bill-wave"></i> Pagar Reservas</a></li>
+            <li><a href="#" data-section="profile"><i class="fas fa-user-circle"></i> Mi Perfil</a></li>
+        </ul>
+        <div class="logout">
+            <button id="logoutBtn"><i class="fas fa-sign-out-alt"></i> Cerrar Sesión</button>
+        </div>
+    </div>
+
+    <div class="main-content" id="mainContent">
+        <h1>Bienvenido, <span id="clientName">Cliente</span></h1>
+        <p>Selecciona una opción del menú lateral para comenzar.</p>
+    </div>
+
+    <!-- ASEGÚRATE DE QUE ESTA URL ES EXACTAMENTE ASÍ, SIN CORCHETES NI PARÉNTESIS -->
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <script>
+        console.log("Script cliente.html iniciado."); 
+        console.log("Tipo de axios después de cargar el script:", typeof axios); 
+
+        const mainContent = document.getElementById('mainContent');
+        const logoutBtn = document.getElementById('logoutBtn');
+        const sidebarLinks = document.querySelectorAll('.sidebar ul li a');
+        const BASE_URL = 'http://localhost:8000/api/'; // Cambiado a /api/
+
+        // --- Configuración de Axios para este cliente ---
+        const api = axios.create({
+            baseURL: BASE_URL,
+            headers: {
+                'Content-Type': 'application/json',
+            },
+        });
+
+        api.interceptors.request.use(config => {
+            const token = localStorage.getItem('access_token');
+            if (token) {
+                config.headers['Authorization'] = `Bearer ${token}`;
+            }
+            return config;
+        }, error => {
+            return Promise.reject(error);
+        });
+
+        api.interceptors.response.use(
+            (response) => response,
+            async (error) => {
+                const originalRequest = error.config;
+                if (error.response && error.response.status === 401 && !originalRequest._retry) {
+                    originalRequest._retry = true; 
+                    try {
+                        const refreshToken = localStorage.getItem('refresh_token');
+                        if (refreshToken) {
+                            const refreshResponse = await axios.post(`http://localhost:8000/api/token/refresh/`, { // URL completa para refrescar
+                                refresh: refreshToken,
+                            });
+                            const newAccessToken = refreshResponse.data.access;
+                            const newRefreshToken = refreshResponse.data.refresh;
+
+                            localStorage.setItem('access_token', newAccessToken);
+                            if (newRefreshToken) { 
+                                localStorage.setItem('refresh_token', newRefreshToken);
+                            }
+                            originalRequest.headers['Authorization'] = `Bearer ${newAccessToken}`;
+                            return api(originalRequest); 
+                        } else {
+                            logoutUser('Tu sesión ha expirado. Por favor, inicia sesión de nuevo.');
+                        }
+                    } catch (refreshError) {
+                        console.error("Error al refrescar token:", refreshError); 
+                        logoutUser('Tu sesión ha expirado y no pudo ser renovada. Por favor, inicia sesión de nuevo.');
+                    }
+                }
+                return Promise.reject(error);
+            }
+        );
+
+        // --- Funciones de Utilidad ---
+        function logoutUser(message = 'Has cerrado sesión.') {
+            localStorage.removeItem('access_token');
+            localStorage.removeItem('refresh_token');
+            localStorage.removeItem('user_name');
+            localStorage.removeItem('user_rol');
+            alert(message); // Temporal, debería ser un showMessage
+            window.location.href = `http://localhost:8000/login.html`; 
+        }
+
+        function showMessage(msg, type, element) {
+            // Asegúrate de que el elemento exista o créalo si es necesario
+            if (!element) {
+                console.error("El elemento para mostrar el mensaje no fue encontrado.");
+                return;
+            }
+            element.textContent = msg;
+            element.className = `message-box ${type}`; 
+            element.style.display = 'block';
+            if (type === 'success') {
+                setTimeout(() => {
+                    element.style.display = 'none';
+                }, 3000); 
+            }
+        }
+
+
+        // --- Funciones de Carga de Contenido de Secciones ---
+        async function loadContent(section) {
+            mainContent.innerHTML = ''; 
+            let htmlContent = '';
+            let title = '';
+
+            // Desactivar todos los enlaces y activar el actual
+            sidebarLinks.forEach(link => link.classList.remove('active'));
+            const currentLink = document.querySelector(`.sidebar ul li a[data-section="${section}"]`);
+            if (currentLink) {
+                currentLink.classList.add('active');
+            } else {
+                console.warn(`No se encontró el enlace para la sección: ${section}`); 
+            }
+
+            switch (section) {
+                case 'dashboard':
+                    title = 'Inicio - Instalaciones Destacadas';
+                    htmlContent = `
+                        <h1>Bienvenido, <span id="clientNameDashboard">Cliente</span></h1>
+                        <p>Estas son algunas instalaciones destacadas para ti:</p>
+                        <div id="featuredInstallations" class="card-grid">
+                            <p>Cargando instalaciones destacadas...</p>
+                        </div>
+                    `;
+                    mainContent.innerHTML = htmlContent;
+                    await fetchFeaturedInstallations();
+                    break;
+                case 'explore':
+                    title = 'Explorar Todas las Instalaciones';
+                    htmlContent = `
+                        <h1>${title}</h1>
+                        <div id="allInstallations" class="card-grid">
+                            <p>Cargando todas las instalaciones...</p>
+                        </div>
+                    `;
+                    mainContent.innerHTML = htmlContent;
+                    await fetchAllInstallations();
+                    break;
+                case 'profile':
+                    title = 'Mi Perfil';
+                    htmlContent = `
+                        <h1>${title}</h1>
+                        <div id="profileDetails" class="form-section">
+                            <p>Cargando datos del perfil...</p>
+                        </div>
+                    `;
+                    mainContent.innerHTML = htmlContent;
+                    await fetchProfile();
+                    break;
+                case 'reservations':
+                    title = 'Mis Reservas';
+                    htmlContent = `
+                        <h1>${title}</h1>
+                        <div id="myReservations" class="table-section">
+                            <p>Cargando historial de reservas...</p>
+                        </div>
+                    `;
+                    mainContent.innerHTML = htmlContent;
+                    await fetchMyReservations();
+                    break;
+                case 'make-reservation':
+                    title = 'Realizar Nueva Reserva';
+                    htmlContent = `
+                        <h1>${title}</h1>
+                        <div id="makeReservationForm" class="form-section">
+                            <p>Cargando formulario de reserva...</p>
+                        </div>
+                    `;
+                    mainContent.innerHTML = htmlContent;
+                    await loadMakeReservationForm();
+                    break;
+                case 'pay-reservations':
+                    title = 'Pagar Reservas Pendientes';
+                    htmlContent = `
+                        <h1>${title}</h1>
+                        <div id="payReservations" class="table-section">
+                            <p>Cargando reservas pendientes de pago...</p>
+                        </div>
+                        <div id="payReservationMessageBox" class="message-box" style="display:none;"></div>
+                    `;
+                    mainContent.innerHTML = htmlContent;
+                    await fetchPayableReservations();
+                    break;
+                default:
+                    title = 'Bienvenido al Panel de Cliente';
+                    htmlContent = `
+                        <h1>Bienvenido, <span id="clientNameDefault">Cliente</span></h1>
+                        <p>Selecciona una opción del menú lateral para comenzar.</p>
+                        <div id="featuredInstallationsDefault" class="card-grid">
+                            <p>Cargando instalaciones destacadas...</p>
+                        </div>
+                    `;
+                    mainContent.innerHTML = htmlContent;
+                    await fetchFeaturedInstallations(); 
+                    break;
+            }
+            updateClientNameDisplay(); 
+        }
+
+        function updateClientNameDisplay() {
+            const userName = localStorage.getItem('user_name') || 'Cliente';
+            document.querySelectorAll('#clientName, #clientNameDashboard, #clientNameDefault').forEach(span => {
+                if (span) span.textContent = userName;
+            });
+        }
+
+        async function fetchFeaturedInstallations() {
+            const installationsContainer = document.getElementById('featuredInstallations') || document.getElementById('featuredInstallationsDefault');
+            if (!installationsContainer) return; 
+
+            installationsContainer.innerHTML = '<p>Cargando instalaciones destacadas...</p>';
+            try {
+                // Usando la instancia 'api' de Axios
+                const response = await api.get('instalaciones/?limit=6'); 
+                const data = response.data;
+                installationsContainer.innerHTML = ''; // Limpiar mensaje de carga
+                if (data.length === 0) {
+                    installationsContainer.innerHTML = '<p>No hay instalaciones destacadas disponibles en este momento.</p>';
+                    return;
+                }
+                data.forEach(inst => {
+                    const card = document.createElement('div');
+                    card.classList.add('card');
+                    card.innerHTML = `
+                        <div class="card-image" style="background-image: url('${inst.imagen_url || 'https://via.placeholder.com/280x180?text=Sin+Imagen'}');"></div>
+                        <div class="card-content">
+                            <h3>${inst.nombre}</h3>
+                            <p>${inst.descripcion.substring(0, 100)}...</p>
+                            <p><strong>Capacidad:</strong> ${inst.capacidad} personas</p>
+                            <p><strong>Tipo:</strong> ${inst.tipo}</p>
+                            <p class="price">Precio por periodo: $${parseFloat(inst.precio_periodo).toFixed(2)}</p>
+                        </div>
+                    `;
+                    installationsContainer.appendChild(card);
+                });
+            } catch (error) {
+                console.error('Error al cargar instalaciones destacadas:', error);
+                installationsContainer.innerHTML = '<p class="message-box error">Error al cargar las instalaciones destacadas. Intenta de nuevo más tarde.</p>';
+            }
+        }
+
+        async function fetchAllInstallations() {
+            const installationsContainer = document.getElementById('allInstallations');
+            if (!installationsContainer) return;
+
+            installationsContainer.innerHTML = '<p>Cargando todas las instalaciones...</p>';
+            try {
+                // Usando la instancia 'api' de Axios
+                const response = await api.get('instalaciones/'); // Sin límite
+                const data = response.data;
+                installationsContainer.innerHTML = '';
+                if (data.length === 0) {
+                    installationsContainer.innerHTML = '<p>No hay instalaciones disponibles en este momento.</p>';
+                    return;
+                }
+                data.forEach(inst => {
+                    const card = document.createElement('div');
+                    card.classList.add('card');
+                    card.innerHTML = `
+                        <div class="card-image" style="background-image: url('${inst.imagen_url || 'https://via.placeholder.com/280x180?text=Sin+Imagen'}');"></div>
+                        <div class="card-content">
+                            <h3>${inst.nombre}</h3>
+                            <p>${inst.descripcion.substring(0, 100)}...</p>
+                            <p><strong>Capacidad:</strong> ${inst.capacidad} personas</p>
+                            <p><strong>Tipo:</strong> ${inst.tipo}</p>
+                            <p class="price">Precio por periodo: $${parseFloat(inst.precio_periodo).toFixed(2)}</p>
+                        </div>
+                    `;
+                    installationsContainer.appendChild(card);
+                });
+            } catch (error) {
+                console.error('Error al cargar todas las instalaciones:', error);
+                installationsContainer.innerHTML = '<p class="message-box error">Error al cargar las instalaciones. Intenta de nuevo más tarde.</p>';
+            }
+        }
+
+        async function fetchProfile() {
+            const profileDetailsDiv = document.getElementById('profileDetails');
+            if (!profileDetailsDiv) return;
+
+            profileDetailsDiv.innerHTML = '<p>Cargando datos del perfil...</p>';
+            try {
+                // Usando la instancia 'api' de Axios
+                const response = await api.get('me/'); 
+                const userData = response.data;
+                profileDetailsDiv.innerHTML = `
+                    <p><strong>Nombre:</strong> ${userData.nombre}</p>
+                    <p><strong>Email:</strong> ${userData.email}</p>
+                    <p><strong>Rol:</strong> ${userData.rol}</p>
+                    `;
+            } catch (error) {
+                console.error('Error al cargar el perfil:', error);
+                profileDetailsDiv.innerHTML = '<p class="message-box error">Error al cargar los datos del perfil. Asegúrate de que el endpoint `/api/me/` esté configurado y funcionando.</p>';
+            }
+        }
+
+        async function fetchMyReservations() {
+            const myReservationsDiv = document.getElementById('myReservations');
+            if (!myReservationsDiv) return;
+
+            myReservationsDiv.innerHTML = '<p>Cargando historial de reservas...</p>';
+            try {
+                // Usando la instancia 'api' de Axios
+                const response = await api.get('reservas/'); // Obtiene todas las reservas del usuario
+                const reservations = response.data;
+                
+                if (reservations.length === 0) {
+                    myReservationsDiv.innerHTML = '<p>No tienes reservas registradas.</p>';
+                    return;
+                }
+
+                let reservationsHtml = `
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Instalación</th>
+                                <th>Fecha</th>
+                                <th>Hora Inicio</th>
+                                <th>Hora Fin</th>
+                                <th>Estado Reserva</th>
+                                <th>Estado Pago</th>
+                                <th>Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                `;
+                reservations.forEach(res => {
+                    const montoEstimado = (res.instalacion_precio_periodo && res.duracion_horas) 
+                                        ? `$${(parseFloat(res.instalacion_precio_periodo) * parseFloat(res.duracion_horas)).toFixed(2)}` 
+                                        : 'N/A';
+                    reservationsHtml += `
+                        <tr>
+                            <td>${res.instalacion_nombre || 'N/A'}</td>
+                            <td>${res.fecha}</td>
+                            <td>${res.horaInicio ? res.horaInicio.substring(0, 5) : 'N/A'}</td>
+                            <td>${res.horaFin ? res.horaFin.substring(0, 5) : 'N/A'}</td>
+                            <td>${res.estadoReserva}</td>
+                            <td>${res.estadoPago}</td>
+                            <td>
+                                <button class="action-button" onclick="alert('Ver detalles de la reserva ${res.id}')">Ver</button>
+                                <!-- Opcional: botón de cancelar si la reserva no ha sido aceptada/pagada -->
+                                ${res.estadoReserva === 'pendiente' ? 
+                                    `<button class="action-button" onclick="cancelReservation(${res.id})">Cancelar</button>` : ''}
+                            </td>
+                        </tr>
+                    `;
+                });
+                reservationsHtml += `
+                            </tbody>
+                    </table>
+                `;
+                myReservationsDiv.innerHTML = reservationsHtml;
+
+            } catch (error) {
+                console.error('Error al cargar mis reservas:', error);
+                myReservationsDiv.innerHTML = '<p class="message-box error">Error al cargar el historial de reservas. Intenta de nuevo más tarde.</p>';
+            }
+        }
+
+        async function cancelReservation(reservationId) {
+            const myReservationsDiv = document.getElementById('myReservations');
+            if (confirm(`¿Estás seguro de que deseas cancelar la reserva ${reservationId}?`)) {
+                try {
+                    const response = await api.post(`reservas/${reservationId}/cancelar/`);
+                    if (response.status === 200) {
+                        showMessage(`Reserva ${reservationId} cancelada con éxito.`, 'success', myReservationsDiv);
+                        await fetchMyReservations(); // Recargar la lista
+                    } else {
+                        showMessage(`Error al cancelar reserva: ${response.data.detail || 'Error desconocido.'}`, 'error', myReservationsDiv);
+                    }
+                } catch (error) {
+                    console.error('Error al cancelar reserva:', error.response ? error.response.data : error);
+                    let errorMessage = 'Error de conexión o inesperado al cancelar reserva.';
+                    if (error.response && error.response.data && error.response.data.detail) {
+                        errorMessage = error.response.data.detail;
+                    }
+                    showMessage(`Error: ${errorMessage}`, 'error', myReservationsDiv);
+                }
+            }
+        }
+
+
+        async function loadMakeReservationForm() {
+            const makeReservationFormDiv = document.getElementById('makeReservationForm');
+            if (!makeReservationFormDiv) return;
+
+            makeReservationFormDiv.innerHTML = '<p>Cargando formulario de reserva...</p>';
+            try {
+                // Usando la instancia 'api' de Axios
+                const response = await api.get('instalaciones/');
+                const installations = response.data;
+
+                let optionsHtml = installations.map(inst => `<option value="${inst.id}">${inst.nombre} (Capacidad: ${inst.capacidad}, Precio: $${parseFloat(inst.precio_periodo).toFixed(2)})</option>`).join('');
+
+                makeReservationFormDiv.innerHTML = `
+                    <form id="reservationForm">
+                        <label for="instalacion_id">Seleccionar Instalación:</label>
+                        <select id="instalacion_id" required>
+                            <option value="">-- Selecciona una instalación --</option>
+                            ${optionsHtml}
+                        </select>
+
+                        <label for="fecha">Fecha de Reserva:</label>
+                        <input type="date" id="fecha" required>
+
+                        <label for="horaInicio">Hora de Inicio:</label>
+                        <input type="time" id="horaInicio" required>
+
+                        <label for="horaFin">Hora de Fin:</label>
+                        <input type="time" id="horaFin" required>
+
+                        <button type="submit">Solicitar Reserva</button>
+                        <p id="reservationMessage" class="message-box" style="display:none; margin-top: 15px;"></p>
+                    </form>
+                `;
+
+                document.getElementById('reservationForm').addEventListener('submit', handleReservationSubmit);
+
+            } catch (error) {
+                console.error('Error al cargar el formulario de reserva:', error);
+                makeReservationFormDiv.innerHTML = '<p class="message-box error">Error al cargar el formulario de reserva. No se pudieron obtener las instalaciones.</p>';
+            }
+        }
+
+        async function handleReservationSubmit(event) {
+            event.preventDefault();
+            const messageElement = document.getElementById('reservationMessage');
+            showMessage('Enviando solicitud...', 'info', messageElement); // Usar showMessage
+
+            const instalacionId = document.getElementById('instalacion_id').value;
+            const fecha = document.getElementById('fecha').value;
+            const horaInicio = document.getElementById('horaInicio').value;
+            const horaFin = document.getElementById('horaFin').value;
+
+            try {
+                // Usando la instancia 'api' de Axios
+                const response = await api.post('reservas/', { 
+                    instalacion: instalacionId,
+                    fecha: fecha,
+                    horaInicio: horaInicio,
+                    horaFin: horaFin,
+                });
+
+                showMessage('¡Reserva solicitada con éxito! Esperando aprobación.', 'success', messageElement);
+                document.getElementById('reservationForm').reset(); 
+                // Opcional: recargar Mis Reservas para ver la nueva
+                // await fetchMyReservations(); 
+            } catch (error) {
+                console.error('Error al solicitar reserva:', error.response ? error.response.data : error);
+                let errorMessageText = 'Error desconocido al solicitar reserva.';
+                if (error.response && error.response.data) {
+                    if (error.response.data.non_field_errors) {
+                        errorMessageText = error.response.data.non_field_errors.join(' ');
+                    } else if (error.response.data.detail) {
+                        errorMessageText = error.response.data.detail;
+                    } else {
+                        const fieldErrors = [];
+                        for (const key in error.response.data) {
+                            if (Array.isArray(error.response.data[key])) {
+                                fieldErrors.push(`${key}: ${error.response.data[key].join(', ')}`);
+                            } else {
+                                fieldErrors.push(`${key}: ${error.response.data[key]}`);
+                            }
+                        }
+                        if (fieldErrors.length > 0) errorMessageText = fieldErrors.join('\n');
+                    }
+                }
+                showMessage(`Error al solicitar reserva: ${errorMessageText}`, 'error', messageElement);
+            }
+        }
+
+        async function fetchPayableReservations() {
+            const payReservationsDiv = document.getElementById('payReservations');
+            const messageBox = document.getElementById('payReservationMessageBox');
+            if (!payReservationsDiv) return;
+
+            payReservationsDiv.innerHTML = '<p>Cargando reservas pendientes de pago...</p>';
+            messageBox.style.display = 'none';
+
+            try {
+                // ¡CORRECCIÓN CLAVE AQUÍ!: estadoPago=pendiente (en minúsculas)
+                // Usando la instancia 'api' de Axios
+                const response = await api.get('reservas/?estadoReserva=aceptada&estadoPago=pendiente'); 
+                const payableReservations = response.data;
+                
+                if (payableReservations.length === 0) {
+                    payReservationsDiv.innerHTML = '<p>No tienes reservas aprobadas pendientes de pago.</p>';
+                    return;
+                }
+
+                let payableHtml = `
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Instalación</th>
+                                <th>Fecha</th>
+                                <th>Hora Inicio</th>
+                                <th>Hora Fin</th>
+                                <th>Monto Total Estimado</th>
+                                <th>Acción</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                `;
+                payableReservations.forEach(res => {
+                    const montoEstimado = (res.instalacion_precio_periodo && res.duracion_horas) 
+                                        ? (parseFloat(res.instalacion_precio_periodo) * parseFloat(res.duracion_horas)).toFixed(2) 
+                                        : 'N/A';
+                    payableHtml += `
+                        <tr>
+                            <td>${res.instalacion_nombre || 'N/A'}</td>
+                            <td>${res.fecha}</td>
+                            <td>${res.horaInicio ? res.horaInicio.substring(0, 5) : 'N/A'}</td>
+                            <td>${res.horaFin ? res.horaFin.substring(0, 5) : 'N/A'}</td>
+                            <td>$${montoEstimado}</td>
+                            <td>
+                                <button class="action-button" onclick="handlePayReservation(${res.id}, '${montoEstimado}')">Pagar</button>
+                            </td>
+                        </tr>
+                    `;
+                });
+                payableHtml += `
+                            </tbody>
+                    </table>
+                `;
+                payReservationsDiv.innerHTML = payableHtml;
+
+            } catch (error) {
+                console.error('Error al cargar reservas pendientes de pago:', error.response ? error.response.data : error);
+                let errorMessage = 'Error al cargar las reservas pendientes de pago.';
+                if (error.response && error.response.data && error.response.data.detail) {
+                    errorMessage = error.response.data.detail;
+                } else if (error.response && error.response.data) {
+                    const fieldErrors = [];
+                    for (const key in error.response.data) {
+                        if (Array.isArray(error.response.data[key])) {
+                            fieldErrors.push(`${key}: ${error.response.data[key].join(', ')}`);
+                        } else {
+                            fieldErrors.push(`${key}: ${error.response.data[key]}`);
+                        }
+                    }
+                    if (fieldErrors.length > 0) errorMessage = fieldErrors.join('\n');
+                }
+                showMessage(`Error: ${errorMessage}`, 'error', messageBox);
+                payReservationsDiv.innerHTML = '<p>Error al cargar las reservas pendientes de pago.</p>'; // Restaurar mensaje
+            }
+        }
+
+        async function handlePayReservation(reservationId, amount) {
+            const messageBox = document.getElementById('payReservationMessageBox');
+            if (!confirm(`¿Estás seguro de que quieres pagar la reserva ${reservationId} por $${amount}?`)) {
+                return;
+            }
+
+            showMessage('Procesando pago...', 'info', messageBox);
+
+            try {
+                // Usando la instancia 'api' de Axios
+                const response = await api.post(`reservas/${reservationId}/pagar/`, {
+                    metodoPago: 'Tarjeta de crédito' // Puedes permitir al usuario seleccionar esto
+                });
+
+                if (response.status === 200) {
+                    showMessage(`Reserva ${reservationId} marcada como pagada con éxito.`, 'success', messageBox);
+                    await fetchPayableReservations(); // Recargar la lista de pagables
+                    await fetchMyReservations(); // Recargar el historial
+                } else {
+                    // Esto es capturado por el catch de Axios interceptor, pero se mantiene como fallback
+                    const errorData = response.data; // Ya es JSON por Axios
+                    let errorMessage = 'Error al procesar el pago.';
+                    if (errorData.detail) {
+                        errorMessage = errorData.detail;
+                    } else if (errorData.non_field_errors) {
+                        errorMessage = errorData.non_field_errors.join(' ');
+                    } else {
+                        const fieldErrors = [];
+                        for (const key in errorData) {
+                            if (Array.isArray(errorData[key])) {
+                                fieldErrors.push(`${key}: ${errorData[key].join(', ')}`);
+                            } else {
+                                fieldErrors.push(`${key}: ${errorData[key]}`);
+                            }
+                        }
+                        if (fieldErrors.length > 0) errorMessage = fieldErrors.join('\n');
+                    }
+                    showMessage(`Error: ${errorMessage}`, 'error', messageBox);
+                }
+
+            } catch (error) {
+                console.error('Error en el envío de pago (de red o inesperado):', error.response ? error.response.data : error);
+                let errorMessage = 'Error de conexión o inesperado al procesar el pago.';
+                if (error.response && error.response.data && error.response.data.detail) {
+                    errorMessage = error.response.data.detail;
+                } else if (error.response && error.response.data) {
+                     const fieldErrors = [];
+                    for (const key in error.response.data) {
+                        if (Array.isArray(error.response.data[key])) {
+                            fieldErrors.push(`${key}: ${error.response.data[key].join(', ')}`);
+                        } else {
+                            fieldErrors.push(`${key}: ${error.response.data[key]}`);
+                        }
+                    }
+                    if (fieldErrors.length > 0) errorMessage = fieldErrors.join('\n');
+                }
+                showMessage(`Error: ${errorMessage}`, 'error', messageBox);
+            }
+        }
+
+        // --- Event Listeners y Carga Inicial ---
+        sidebarLinks.forEach(link => {
+            link.addEventListener('click', (e) => {
+                e.preventDefault(); 
+                const section = e.target.closest('a').dataset.section;
+                loadContent(section);
+            });
+        });
+
+        if (logoutBtn) { 
+            logoutBtn.addEventListener('click', () => {
+                logoutUser();
+            });
+        }
+        
+        document.addEventListener('DOMContentLoaded', () => {
+            if (checkAuthentication()) {
+                loadContent('dashboard'); 
+            }
+        });
+
+        
+        window.showSection = loadContent; 
+        window.logoutUser = logoutUser; 
+        window.handlePayReservation = handlePayReservation; 
+        window.cancelReservation = cancelReservation; 
+    </script>
+</body>
+</html>
